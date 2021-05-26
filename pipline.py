@@ -1,4 +1,5 @@
 import numpy as np
+import repeat_encoder as encoder
 
 text = './default_text.txt'
 
@@ -26,19 +27,36 @@ def bit_array_to_channel_fromat(bit_array):
 def channel_fromat_to_bit_array(bit_array):
     return (np.array(bit_array) + 1) // 2
 
+
+##########################################################
+##########################################################
+
+####### transfrom file to channel fromat
+####### we still need to add encoding and decoding
+####### channel fromat is numpy array composed of -1 and 1
+####### ex : [-1, 1, 1, -1, 1, 1, 1, -1]
+
 def byte_array_to_channel_fromat(byte_array):
     return bit_array_to_channel_fromat(to_bit_array(byte_array))
 
 def channel_fromat_to_byte_array(channel_fromat):
     return to_byte_array(channel_fromat_to_bit_array(channel_fromat)).tobytes()
 
+def channel(chanInput):
+    chanInput = np.clip(chanInput,-1,1)
+    erasedIndex = np.random.randint(3)
+    chanInput[erasedIndex:len(chanInput):3] = 0
+    return chanInput #+ np.sqrt(10)*np.random.randn(len(chanInput))
+
+
 ##encoding='utf-8'
-#channel fromat is a numpy array
 with open(text, 'rb') as f:
     data = f.read()
    
-    channel = byte_array_to_channel_fromat(data)
-    text = channel_fromat_to_byte_array(channel)
+    channel_format = byte_array_to_channel_fromat(data)
+    output = channel(encoder.encode(channel_format, 4))
+    text = channel_fromat_to_byte_array(encoder.decode(output, 4))
 
+    print(text == data)
     print(text.decode())
     
