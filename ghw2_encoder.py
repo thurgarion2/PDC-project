@@ -34,6 +34,7 @@ def mapping(n):
     return map
 
 # encodes blocks of bits of length n 
+# bits is a string of bits 0 and 1
 def encode(bits, n):
     map = mapping(n)
     sequence = []
