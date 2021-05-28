@@ -1,4 +1,3 @@
-from typing import Sequence
 import numpy as np
 
 #bits is a sequence of -1, 1
@@ -33,5 +32,5 @@ def decode(sequence, n):
 if __name__ == '__main__':
     array = np.array([1,-1,1,-1])
     channel = encode(array, 4)
-    print(channel)
+    
     print(decode(channel, 4))

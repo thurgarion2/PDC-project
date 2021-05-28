@@ -1,7 +1,5 @@
 import numpy as np
-import repeat_encoder as encoder
-
-text = './default_text.txt'
+import repeat_and_discard as encoder
 
 def access_bit(data, num):
     shift = int(num % 8)
@@ -46,17 +44,22 @@ def channel(chanInput):
     chanInput = np.clip(chanInput,-1,1)
     erasedIndex = np.random.randint(3)
     chanInput[erasedIndex:len(chanInput):3] = 0
-    return chanInput #+ np.sqrt(10)*np.random.randn(len(chanInput))
+    return chanInput + np.sqrt(10)*np.random.randn(len(chanInput))
 
 
-##encoding='utf-8'
-with open(text, 'rb') as f:
-    data = f.read()
+
+if __name__ == '__main__':
+    encoder = encoder.encoder(80)
+    text = './80_character.txt'
+
+    ##encoding='utf-8'
+    with open(text, 'rb') as f:
+        data = f.read()
    
-    channel_format = byte_array_to_channel_fromat(data)
-    output = channel(encoder.encode(channel_format, 4))
-    text = channel_fromat_to_byte_array(encoder.decode(output, 4))
+        channel_format = byte_array_to_channel_fromat(data)
+        output = channel(encoder.encode(channel_format))
+        text = channel_fromat_to_byte_array(encoder.decode(output))
 
-    print(text == data)
-    print(text.decode())
+        print(text == data)
+        print(text.decode())
     
