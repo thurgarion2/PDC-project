@@ -1,5 +1,5 @@
 import numpy as np
-import repeat_and_discard as encoder
+import ghw2_encoder as encoder
 
 def access_bit(data, num):
     shift = int(num % 8)
@@ -48,10 +48,11 @@ def channel(chanInput):
     chanInput[erasedIndex:len(chanInput):3] = 0
     return chanInput + np.sqrt(10)*np.random.randn(len(chanInput))
 
-
+def hamming_distance(a, b):
+    return np.sum(np.where(a-b != 0, 1, 0))
 
 if __name__ == '__main__':
-    encoder = encoder.encoder(80)
+    encoder = encoder.encoder(10)
     text = './80_character.txt'
 
     ##encoding='utf-8'
@@ -61,9 +62,12 @@ if __name__ == '__main__':
 
         channel_format = byte_array_to_channel_format(data)
         output = channel(encoder.encode(channel_format))
-        text = channel_format_to_byte_array(encoder.decode(output))
+        decoded = encoder.decode(output)
+        text = channel_format_to_byte_array(decoded)
 
-        
+        print("hamming")
+        print(hamming_distance(channel_format,decoded))
+        print("#######")
 
         print(text == data)
         print(text.decode())
