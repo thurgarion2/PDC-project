@@ -51,6 +51,7 @@ def channel(chanInput):
 def hamming_distance(a, b):
     return np.sum(np.where(a-b != 0, 1, 0))
 
+    
 if __name__ == '__main__':
     encoder = encoder.encoder(10)
     text = './80_character.txt'
