@@ -32,7 +32,7 @@ def parse_args():
     return args
 
 if __name__ == '__main__':
-    encoder = encoder.encoder(n=8)
+    encoder = encoder.encoder()
     args = parse_args()
 
     if args.mode == 'encode':

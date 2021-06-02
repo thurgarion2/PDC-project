@@ -91,11 +91,6 @@ class encoder:
         return np.argmin([np.sum(b**2) for b in possible])
 
 
-    def decode_block(self, block):
-        block = block.reshape((1,-1))
-        index = np.argmin(self.dist(self.codewords,block))
-        return self.index_to_block(index)
-
 
     #first block is used to know how many bits were used for paddind
     def pad(self, bits):

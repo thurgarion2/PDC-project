@@ -57,11 +57,11 @@ def encode_file(file, encoder):
         print(len(data))
         encoded = encoder.encode(byte_array_to_channel_format(data))
         print(encoded.size)
-        np.savetxt("./encoded.txt", encoded)
+        np.savetxt("./text_files/encoded.txt", encoded)
 
 
 def decode_file(file, encoder):
-    with open("./decoded.txt", 'wb') as f:
+    with open("./text_files/decoded.txt", 'wb') as f:
         data = np.loadtxt(file)
         decoded = channel_format_to_byte_array(encoder.decode(data))
         f.write(decoded)
