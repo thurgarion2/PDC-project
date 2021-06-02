@@ -1,5 +1,6 @@
 import numpy as np
 import ghw2_encoder as encoder
+import zlib
 
 def access_bit(data, num):
     shift = int(num % 8)
@@ -45,30 +46,49 @@ def channel_format_to_byte_array(channel_format):
 def channel(chanInput):
     chanInput = np.clip(chanInput,-1,1)
     erasedIndex = np.random.randint(3)
+    print(erasedIndex)
     chanInput[erasedIndex:len(chanInput):3] = 0
-    return chanInput + np.sqrt(10)*np.random.randn(len(chanInput))
+    out = chanInput + np.sqrt(10)*np.random.randn(len(chanInput))
+    return out
+
+def encode_file(file, encoder):
+    with open(file, 'rb') as f:
+        data = f.read()
+        print(len(data))
+        encoded = encoder.encode(byte_array_to_channel_format(data))
+        print(encoded.size)
+        np.savetxt("./encoded.txt", encoded)
+
+
+def decode_file(file, encoder):
+    with open("./decoded.txt", 'wb') as f:
+        data = np.loadtxt(file)
+        decoded = channel_format_to_byte_array(encoder.decode(data))
+        f.write(decoded)
+
 
 def hamming_distance(a, b):
     return np.sum(np.where(a-b != 0, 1, 0))
 
 if __name__ == '__main__':
-    encoder = encoder.encoder(10)
+    encoder = encoder.encoder()
     text = './80_character.txt'
 
     ##encoding='utf-8'
     with open(text, 'rb') as f:
         data = f.read()
-   
 
         channel_format = byte_array_to_channel_format(data)
-        output = channel(encoder.encode(channel_format))
-        decoded = encoder.decode(output)
-        text = channel_format_to_byte_array(decoded)
+        
+        tot = 0
+        for loop in range(100):
+            output = channel(encoder.encode(channel_format))
+            decoded = encoder.decode(output)
+            text = channel_format_to_byte_array(decoded)
+            tot = tot + hamming_distance(channel_format,decoded)
+            print(loop)
 
-        print("hamming")
-        print(hamming_distance(channel_format,decoded))
-        print("#######")
+        print("{} avg".format(tot/100))
 
-        print(text == data)
-        print(text.decode())
+       
     
