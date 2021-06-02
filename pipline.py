@@ -70,6 +70,7 @@ def decode_file(file, encoder):
 def hamming_distance(a, b):
     return np.sum(np.where(a-b != 0, 1, 0))
 
+    
 if __name__ == '__main__':
     encoder = encoder.encoder()
     text = './80_character.txt'

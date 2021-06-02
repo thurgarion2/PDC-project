@@ -65,10 +65,7 @@ class encoder:
     def index(self,block):
         return int(np.sum(2**np.arange(block.size)*block))
 
-
-
     def decode_block(self, block, erasedIndex):
-        
         
         block[erasedIndex::3] = 0
 
@@ -88,9 +85,16 @@ class encoder:
             curr = curr + 1
         return (block*2)-1
 
+
     def find_erased_bit(self, bits):
         possible = [bits[::3],bits[1::3],bits[2::3]]
         return np.argmin([np.sum(b**2) for b in possible])
+
+
+    def decode_block(self, block):
+        block = block.reshape((1,-1))
+        index = np.argmin(self.dist(self.codewords,block))
+        return self.index_to_block(index)
 
 
     #first block is used to know how many bits were used for paddind
@@ -103,4 +107,25 @@ class encoder:
         nb_pad = max(self.index((bits[:self.block_size]+1)//2),1)
         return bits[self.block_size:-nb_pad]
    
-            
+        
+
+def channel(chanInput):
+    chanInput = np.clip(chanInput,-1,1)
+    erasedIndex = np.random.randint(3)
+    chanInput[erasedIndex:len(chanInput):3] = 0
+    return chanInput + np.sqrt(10)*np.random.randn(len(chanInput))
+
+if __name__ == '__main__':
+    encoder = encoder()
+    data = np.array([-1,1,1])
+    encoded = encoder.encode(data)
+    print(encoded)
+    channel_output = channel(encoded)
+
+    print(encoder.decode(channel_output))
+
+
+
+
+
+
