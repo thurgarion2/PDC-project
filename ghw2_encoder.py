@@ -6,6 +6,7 @@ class encoder:
         self.block_size = 9
         self.codewords = self.construct_codewords()
         self.codewords_size = self.codewords.shape[1]
+        self.max_block = 78
         
 
     def construct_codewords(self):
@@ -32,18 +33,16 @@ class encoder:
     def decode(self, channel_output):
 
         erasedIndex = self.find_erased_bit(channel_output)
+        channel_output[erasedIndex::3] = 0
 
         nb_blocks = channel_output.size/self.codewords_size
         blocks = np.split(channel_output, nb_blocks)
 
-      
+
         reconstructed = []
         for block in blocks:
-            reconstructed.append(self.decode_block(block, erasedIndex))
-            erasedIndex = (erasedIndex - (self.codewords_size) % 3 + 3)%3
+            reconstructed.append(self.decode_block(block))
            
-
-      
         return self.unpad(np.concatenate(reconstructed))
 
     def encode(self, bits):
@@ -51,9 +50,14 @@ class encoder:
         nb_blocks = bits.size/self.block_size
         blocks = np.split(bits, nb_blocks)
 
+        if len(blocks) > self.max_block :
+            blocks = blocks[:self.max_block]
+
         encoded = []
         for block in blocks:
             encoded.append(self.encode_block(block))
+        
+        print(np.concatenate(encoded).size)
         return np.concatenate(encoded)
     
 
@@ -65,9 +69,7 @@ class encoder:
     def index(self,block):
         return int(np.sum(2**np.arange(block.size)*block))
 
-    def decode_block(self, block, erasedIndex):
-        
-        block[erasedIndex::3] = 0
+    def decode_block(self, block):
 
         block = block.reshape((1,-1))
         index = np.argmin(self.dist(self.codewords,block))
