@@ -1,6 +1,5 @@
 import numpy as np
 import ghw2_encoder as encoder
-import zlib
 
 def access_bit(data, num):
     shift = int(num % 8)
@@ -46,23 +45,22 @@ def channel_format_to_byte_array(channel_format):
 def channel(chanInput):
     chanInput = np.clip(chanInput,-1,1)
     erasedIndex = np.random.randint(3)
-    print(erasedIndex)
     chanInput[erasedIndex:len(chanInput):3] = 0
     out = chanInput + np.sqrt(10)*np.random.randn(len(chanInput))
     return out
 
-def encode_file(file, encoder):
-    with open(file, 'rb') as f:
+def encode_file(input, output, encoder):
+    with open(input, 'rb') as f:
         data = f.read()
         print(len(data))
         encoded = encoder.encode(byte_array_to_channel_format(data))
         print(encoded.size)
-        np.savetxt("./text_files/encoded.txt", encoded)
+        np.savetxt(output, encoded)
 
 
-def decode_file(file, encoder):
-    with open("./text_files/decoded.txt", 'wb') as f:
-        data = np.loadtxt(file)
+def decode_file(input, output, encoder):
+    with open(output, 'wb') as f:
+        data = np.loadtxt(input)
         decoded = channel_format_to_byte_array(encoder.decode(data))
         f.write(decoded)
 

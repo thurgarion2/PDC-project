@@ -7,7 +7,8 @@ class encoder:
         self.codewords = self.construct_codewords()
         self.codewords_size = self.codewords.shape[1]
         self.max_block = 78
-        
+
+
 
     def construct_codewords(self):
         c_9 = self.construct_cn(9)
@@ -37,7 +38,6 @@ class encoder:
 
         nb_blocks = channel_output.size/self.codewords_size
         blocks = np.split(channel_output, nb_blocks)
-
 
         reconstructed = []
         for block in blocks:

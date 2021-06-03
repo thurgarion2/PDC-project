@@ -54,7 +54,6 @@ if __name__ == '__main__':
     tx_p_signal = np.loadtxt(args.input_file)
 
     N_sample = tx_p_signal.size
-    print(N_sample)
     if not ((tx_p_signal.shape == (N_sample,)) and
             np.issubdtype(tx_p_signal.dtype, np.floating)):
         raise ValueError('Parameter[input_file] must contain a real-valued sequence.')
