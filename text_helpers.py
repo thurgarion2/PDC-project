@@ -1,10 +1,12 @@
 import numpy as np
 import ghw2_encoder as encoder
 
+#
 def access_bit(data, num):
     shift = int(num % 8)
     return (data & (1<<shift)) >> shift
 
+#returns bit array
 def to_bit_array(byte_array):
     bits = []
 
@@ -13,6 +15,7 @@ def to_bit_array(byte_array):
             bits.append(access_bit(byte, i))
     return np.array(bits)
 
+#returns array of bytes
 def to_byte_array(bit_array):
     return np.packbits(bit_array, bitorder='little')
 
@@ -42,6 +45,7 @@ def byte_array_to_channel_format(byte_array):
 def channel_format_to_byte_array(channel_format):
     return to_byte_array(channel_format_to_bit_array(channel_format)).tobytes()
 
+#Output after channel
 def channel(chanInput):
     chanInput = np.clip(chanInput,-1,1)
     erasedIndex = np.random.randint(3)
@@ -64,7 +68,7 @@ def decode_file(input, output, encoder):
         decoded = channel_format_to_byte_array(encoder.decode(data))
         f.write(decoded)
 
-
+#calculate Hamming distance
 def hamming_distance(a, b):
     return np.sum(np.where(a-b != 0, 1, 0))
 
@@ -76,18 +80,18 @@ if __name__ == '__main__':
     ##encoding='utf-8'
     with open(text, 'rb') as f:
         data = f.read()
-
+        print(data)
         channel_format = byte_array_to_channel_format(data)
         
         tot = 0
-        for loop in range(100):
+        for loop in range(10):
             output = channel(encoder.encode(channel_format))
             decoded = encoder.decode(output)
             text = channel_format_to_byte_array(decoded)
-            tot = tot + hamming_distance(channel_format,decoded)
-            print(loop)
+            if(text==data):
+                tot+=1
 
-        print("{} avg".format(tot/100))
+        print("{} avg".format(tot/10))
 
        
     
